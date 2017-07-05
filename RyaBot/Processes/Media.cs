@@ -1,4 +1,5 @@
 ﻿using Discord.Audio;
+using RyaBot.Handlers;
 using RyaBot.Services;
 using System;
 using System.Diagnostics;
@@ -9,29 +10,31 @@ using YoutubeExplode.Models;
 
 namespace RyaBot.Processes
 {
-  public class Media
+  public class Media : IDisposable
   {
-    private Settings settings;
-    private Msg message;
-    private bool playing = false;
-    private CancellationTokenSource source;
-    private System.Timers.Timer timer;
+    private readonly Settings _settings;
+    private readonly Msg _message;
+
+    private bool _playing = false;
+    private CancellationTokenSource _source;
+    private System.Timers.Timer _timer;
 
 
     public Media(Settings settings, Msg message)
     {
-      this.settings = settings;
-      this.message = message;
+      _settings = settings;
+      _message = message;
 
-      timer = new System.Timers.Timer(1000);
-      timer.Elapsed += async (sender, e) => await HandleTimerAsync();
-      timer.Start();
+      _timer = new System.Timers.Timer(1000);
+      _timer.AutoReset = false;
+      _timer.Elapsed += async (sender, e) => { await HandleTimerAsync(); _timer.Start(); };
+      _timer.Start();
     }
 
     private Process CreateStream(string path)
     {
       var ffmpeg = new ProcessStartInfo {
-        FileName = "ffmpeg",
+        FileName = "3rd_party\\ffmpeg",
         Arguments = $"-loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
         UseShellExecute = false,
         RedirectStandardOutput = true,
@@ -45,55 +48,61 @@ namespace RyaBot.Processes
       var ffmpegOutput = ffmpegProcess.StandardOutput.BaseStream;
       var discordAudioStream = client.CreatePCMStream(AudioApplication.Mixed);
 
-      source = new CancellationTokenSource();
-      Console.WriteLine("new " + source);
+      _source = new CancellationTokenSource();
+      Console.WriteLine("new " + _source);
 
-      await ffmpegOutput.CopyToAsync(discordAudioStream, 81920, source.Token).ContinueWith(task => {
+      await ffmpegOutput.CopyToAsync(discordAudioStream, 81920, _source.Token).ContinueWith(task => {
         if (!task.IsCanceled && task.IsFaulted) //supress cancel exception
           Console.WriteLine(task.Exception);
       });
       ffmpegProcess.WaitForExit();
       await discordAudioStream.FlushAsync();
 
-      Console.WriteLine("dispose " + source);
-      source.Dispose();
-      settings.currentSong = "";
-      playing = false;
+      Console.WriteLine("dispose " + _source);
+      _source.Dispose();
+      _source = null;
+      _settings.currentSong = "";
+      _playing = false;
     }
 
-    public async Task StopStreamAsync()
+    public async Task StopCurrentStreamAsync()
     {
-      if (playing)
+      if (_playing)
       {
-        source.Cancel();
-        timer.Stop();
-        
-        timer = new System.Timers.Timer(1000);
-        timer.Elapsed += async (sender, e) => await HandleTimerAsync();
-        timer.Start();
-
-        playing = false;
+        if (_source != null) _source.Cancel();
+        _playing = false;
       }
     }
 
     private async Task HandleTimerAsync()
     {
-      try
+      if (_settings.voiceClient != null && _settings.playList.Count > 0 && !_playing)
       {
-        if (settings.voiceClient != null && settings.playList.Count > 0 && !playing)
-        {
-          playing = true;
-          var path = settings.playList.Keys.First();
+        _playing = true;
+        var path = _settings.playList.Keys.First();
 
-          settings.playList.TryRemove(settings.playList.Keys.First(), out VideoInfo video);
-          await message.SendToChannel(331741897737502720, $"Now playing: {video.Title}");
-          settings.currentSong = video.Title;
-          await StartStreamAsync(settings.voiceClient, path);
-        }
+        _settings.playList.TryRemove(_settings.playList.Keys.First(), out VideoInfo video);
+        await _message.SendToChannel(331741897737502720, $"Now playing: {video.Title}");
+        _settings.currentSong = video.Title;
+        await StartStreamAsync(_settings.voiceClient, path);
       }
-      catch (Exception e)
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposing)
       {
-        Console.WriteLine(e);
+        if (_timer != null)
+        {
+          _timer.Dispose();
+          _timer = null;
+        }
       }
     }
   }

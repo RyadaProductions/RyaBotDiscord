@@ -15,38 +15,37 @@ namespace RyaBot.Main
 {
   public class Installer
   {
-    private DiscordSocketClient _Client;
+    private readonly DiscordSocketClient _client;
     // Commands Service holding all commands
-    private readonly CommandService _Commands = new CommandService();
+    private readonly CommandService _commands = new CommandService();
     // Dependency Injection
-    private readonly IServiceCollection _Map = new ServiceCollection();
-    private IServiceProvider _Services;
+    private readonly IServiceCollection _map = new ServiceCollection();
+    private IServiceProvider _services;
     // Services
-    private Settings _Settings = new Settings();
-    private Msg _Message;
-    private Media _Media;
+    private readonly Settings _settings = new Settings();
+    private readonly Msg _message;
+    private readonly Media _media;
 
 
-    public Installer(DiscordSocketClient _Client)
+    public Installer(DiscordSocketClient client)
     {
-      this._Client = _Client;
+      _client = client;
+      _message = new Msg(_client);
+      _media = new Media(_settings, _message);
     }
 
     public async Task InstallCommands()
     {
-      _Message = new Msg(_Client);
-      _Media = new Media(_Settings, _Message);
+      _map.AddSingleton(_settings);
+      _map.AddSingleton(_message);
+      _map.AddSingleton(_media);
+      _map.AddSingleton(new Youtube());
 
-      _Map.AddSingleton(_Settings);
-      _Map.AddSingleton(_Message);
-      _Map.AddSingleton(_Media);
-      _Map.AddSingleton(new Youtube());
+      _services = _map.BuildServiceProvider();
 
-      _Services = _Map.BuildServiceProvider();
+      await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
-      await _Commands.AddModulesAsync(Assembly.GetEntryAssembly());
-
-      _Client.MessageReceived += CmdHandler;
+      _client.MessageReceived += CmdHandler;
     }
 
     private async Task CmdHandler(SocketMessage arg)
@@ -57,9 +56,9 @@ namespace RyaBot.Main
       int pos = 0;
       if (msg.HasCharPrefix('!', ref pos))
       {
-        var context = new SocketCommandContext(_Client, msg);
+        var context = new SocketCommandContext(_client, msg);
 
-        var result = await _Commands.ExecuteAsync(context, pos, _Services);
+        var result = await _commands.ExecuteAsync(context, pos, _services);
 
         #if DEBUG
           if (!result.IsSuccess) await context.Channel.SendMessageAsync(result.ErrorReason);

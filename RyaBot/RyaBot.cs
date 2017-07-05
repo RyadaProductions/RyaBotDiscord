@@ -14,13 +14,13 @@ namespace RyaBot
 {
   public class RyaBot
   {
-    private DiscordSocketClient _Client;
+    private readonly DiscordSocketClient _client;
 
     public RyaBot()
     {
       Console.Title = "RyaBot";
 
-      _Client = new DiscordSocketClient(new DiscordSocketConfig {
+      _client = new DiscordSocketClient(new DiscordSocketConfig {
         LogLevel = LogSeverity.Info,
       });
     }
@@ -29,12 +29,12 @@ namespace RyaBot
     {
 
       var token = Environment.GetEnvironmentVariable("token");
-      _Client.Log += Logger;
+      _client.Log += Logger;
 
-      await new Installer(_Client).InstallCommands();
+      await new Installer(_client).InstallCommands();
 
-      await _Client.LoginAsync(TokenType.Bot, token);
-      await _Client.StartAsync();
+      await _client.LoginAsync(TokenType.Bot, token);
+      await _client.StartAsync();
 
       await Task.Delay(-1);
     }

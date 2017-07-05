@@ -14,49 +14,49 @@ namespace RyaBot.Modules
 {
   public class Voice : ModuleBase<SocketCommandContext>
   {
-    private Settings settings;
-    private Media media;
-    private Youtube youtube;
-    private ulong voiceChannel = 331745615321235460;
+    private readonly Settings _settings;
+    private readonly Media _media;
+    private readonly Youtube _youtube;
+    private readonly ulong _voiceChannel = 331745615321235460;
 
     public Voice(Settings settings, Media media, Youtube youtube)
     {
-      this.settings = settings;
-      this.media = media;
-      this.youtube = youtube;
+      _settings = settings;
+      _media = media;
+      _youtube = youtube;
     }
     
     [Command("Summon", RunMode = RunMode.Async)]
     public async Task JoinChannel()
     {
-      if (settings.voiceClient == null)
+      if (_settings.voiceClient == null)
       {
-        var channel = Context.Client.GetChannel(voiceChannel) as IVoiceChannel;
-        settings.voiceClient = await channel.ConnectAsync();
+        var channel = Context.Client.GetChannel(_voiceChannel) as IVoiceChannel;
+        _settings.voiceClient = await channel.ConnectAsync();
       }
     }
     
     [Command("Unsummon", RunMode = RunMode.Async)]
     public async Task LeaveChannel()
     {
-      if (settings.voiceClient != null)
+      if (_settings.voiceClient != null)
       {
-        await media.StopStreamAsync();
-        await settings.voiceClient.StopAsync();
+        await _media.StopCurrentStreamAsync();
+        await _settings.voiceClient.StopAsync();
 
-        settings.voiceClient = null;
-        settings.playList.Clear();
-        settings.currentSong = "";
+        _settings.voiceClient = null;
+        _settings.playList.Clear();
+        _settings.currentSong = "";
       }
     }
     
     [Command("Play", RunMode = RunMode.Async)]
     public async Task Playmusic(String url)
     {
-      if (settings.voiceClient != null)
+      if (_settings.voiceClient != null)
       {
-        if (await youtube.Download(url, settings))
-          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" song: {settings.playList.Values.Last().Title} has been added to the queue.");
+        if (await _youtube.Download(url, _settings))
+          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" song: {_settings.playList.Values.Last().Title} has been added to the queue.");
         else
           await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Error occured while downloading song, song is either too long or doesn't exist.");
       }
@@ -65,27 +65,37 @@ namespace RyaBot.Modules
     [Command("Stop", RunMode = RunMode.Async)]
     public async Task Stopmusic()
     {
-      if (settings.voiceClient != null)
+      if (_settings.voiceClient != null)
       {
-        await media.StopStreamAsync();
+        await _media.StopCurrentStreamAsync();
 
-        settings.playList.Clear();
-        settings.currentSong = "";
+        _settings.playList.Clear();
+        _settings.currentSong = "";
 
         await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Stopped playing music and cleared the queue.");
       }
     }
-    
+
+    [Command("Skip", RunMode = RunMode.Async)]
+    public async Task SkipCurrentSong()
+    {
+      if (_settings.voiceClient != null)
+      {
+        await _media.StopCurrentStreamAsync();
+        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Stopped playing {_settings.currentSong}");
+      }
+    }
+
     [Command("Queue", RunMode = RunMode.Async)]
     public async Task ShowQueue()
     {
-      if (settings.playList.Count > 0)
+      if (_settings.playList.Count > 0)
       {
         var songNr = 0;
-        var songList = "**Current song:** " + settings.currentSong + "\n \n";
+        var songList = "**Current song:** " + _settings.currentSong + "\n \n";
         songList += "**Song Queue:** \n \n";
 
-        foreach (VideoInfo video in settings.playList.Values)
+        foreach (VideoInfo video in _settings.playList.Values)
         {
           if (songNr == 25) break;
           songNr++;

@@ -12,35 +12,34 @@ namespace RyaBot.Handlers
 {
   public class Youtube
   {
-    private YoutubeClient ytClient;
-
-    private string outputFolder = $"{Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar}videos";
+    private readonly YoutubeClient _ytClient;
+    private readonly string _outputFolder = $"{Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar}videos";
 
     public Youtube()
     {
-      ytClient = new YoutubeClient();
+      _ytClient = new YoutubeClient();
     }
 
     public async Task<bool> Download(string URL, Settings settings)
     {
-      var exists = await ytClient.CheckVideoExistsAsync(URL);
+      var exists = await _ytClient.CheckVideoExistsAsync(URL);
 
       if (exists)
       {
-        Console.WriteLine($"Opening / Creating output folder at: {outputFolder}");
-        Directory.CreateDirectory(outputFolder);
-        var videoInfo = await ytClient.GetVideoInfoAsync(URL);
+        Console.WriteLine($"Opening / Creating output folder at: {_outputFolder}");
+        Directory.CreateDirectory(_outputFolder);
+        var videoInfo = await _ytClient.GetVideoInfoAsync(URL);
 
         if (videoInfo.Duration > TimeSpan.FromMinutes(10)) return false;
 
         var streamInfo = videoInfo.AudioStreams.OrderBy(s => s.AudioEncoding).Last();
         var fileExtension = streamInfo.Container.GetFileExtension();
 
-        var filePath = Path.Combine(outputFolder, await GetMD5(videoInfo.Title) + fileExtension);
+        var filePath = Path.Combine(_outputFolder, await GetMD5(videoInfo.Title) + fileExtension);
 
         Console.WriteLine($"Trying to find song at path: {filePath}");
 
-        if (!File.Exists(filePath)) await ytClient.DownloadMediaStreamAsync(streamInfo, filePath);
+        if (!File.Exists(filePath)) await _ytClient.DownloadMediaStreamAsync(streamInfo, filePath);
 
         settings.playList.TryAdd(filePath, videoInfo);
         return true;
