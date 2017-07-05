@@ -15,7 +15,6 @@ namespace RyaBot.Handlers
     private YoutubeClient downloader;
 
     private string outputFolder = $"{Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar}videos";
-    //private string YoutubeLinkRegex = "(?:.+?)?(?:\\/v\\/|watch\\/|\\?v=|\\&v=|youtu\\.be\\/|\\/v=|^youtu\\.be\\/)([a-zA-Z0-9_-]{11})+";
 
     public Youtube()
     {
@@ -25,6 +24,7 @@ namespace RyaBot.Handlers
     public async Task<bool> Download(string URL, Settings settings)
     {
       bool exists = await downloader.CheckVideoExistsAsync(URL);
+
       if (exists)
       {
         Console.WriteLine($"Opening / Creating output folder at: {outputFolder}");

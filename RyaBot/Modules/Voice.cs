@@ -25,64 +25,57 @@ namespace RyaBot.Modules
       this.media = media;
       this.youtube = youtube;
     }
-
-    #region !summon
+    
     [Command("Summon", RunMode = RunMode.Async)]
     public async Task JoinChannel()
     {
-      // Get the audio channel
       if (settings.voiceClient == null)
       {
         var channel = Context.Client.GetChannel(voiceChannel) as IVoiceChannel;
         settings.voiceClient = await channel.ConnectAsync();
-        await settings.voiceClient.SetSpeakingAsync(true);
       }
     }
-    #endregion
-
-    #region !unsummon
+    
     [Command("Unsummon", RunMode = RunMode.Async)]
     public async Task LeaveChannel()
     {
-      // Get the audio channel
       if (settings.voiceClient != null)
       {
         await media.StopStreamAsync();
         await settings.voiceClient.StopAsync();
+
         settings.voiceClient = null;
         settings.playList.Clear();
         settings.currentSong = "";
       }
     }
-    #endregion
-
-    #region !play
+    
     [Command("Play", RunMode = RunMode.Async)]
     public async Task Playmusic(String url)
     {
       if (settings.voiceClient != null)
       {
-        if (await youtube.Download(url, settings)) await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" song: {settings.playList.Values.Last().Title} has been added to the queue.");
-        else await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Error occured while downloading song, song is either too long or doesn't exist.");
+        if (await youtube.Download(url, settings))
+          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" song: {settings.playList.Values.Last().Title} has been added to the queue.");
+        else
+          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Error occured while downloading song, song is either too long or doesn't exist.");
       }
     }
-    #endregion
-
-    #region !stop
+    
     [Command("Stop", RunMode = RunMode.Async)]
     public async Task Stopmusic()
     {
       if (settings.voiceClient != null)
       {
         await media.StopStreamAsync();
+
         settings.playList.Clear();
         settings.currentSong = "";
+
         await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Stopped playing music and cleared the queue.");
       }
     }
-    #endregion
-
-    #region !queue
+    
     [Command("Queue", RunMode = RunMode.Async)]
     public async Task ShowQueue()
     {
@@ -91,6 +84,7 @@ namespace RyaBot.Modules
         int songNr = 0;
         string songList = "**Current song:** " + settings.currentSong + "\n \n";
         songList += "**Song Queue:** \n \n";
+
         foreach (VideoInfo video in settings.playList.Values)
         {
           if (songNr == 25) break;
@@ -100,14 +94,12 @@ namespace RyaBot.Modules
           songList += video.Title + " ";
           songList += video.Duration.Minutes + ":" + video.Duration.Seconds + "\n";
         }
+
         Embed embed = new EmbedGen().Generate(songList);
         await Context.Channel.SendMessageAsync("", embed: embed);
       }
       else
-      {
         await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"No messages in the queue.");
-      }
     }
-    #endregion
   }
 }

@@ -6,7 +6,6 @@ namespace RyaBot.Handlers
   {
     public EmbedGen()
     {
-
     }
 
     public Embed Generate(string message)
