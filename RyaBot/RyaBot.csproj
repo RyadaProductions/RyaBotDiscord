@@ -152,8 +152,6 @@
     <Content Include="3rd_party\ffmpeg.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="3rd_party\ffplay.exe" />
-    <Content Include="3rd_party\ffprobe.exe" />
     <Content Include="3rd_party\libsodium.dll" />
     <Content Include="3rd_party\opus.dll" />
   </ItemGroup>
