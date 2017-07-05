@@ -135,7 +135,7 @@
   <ItemGroup>
     <Compile Include="Main\Installer.cs" />
     <Compile Include="Handlers\EmbedGen.cs" />
-    <Compile Include="Handlers\Msg.cs" />
+    <Compile Include="Handlers\Message.cs" />
     <Compile Include="Handlers\Youtube.cs" />
     <Compile Include="Modules\Voice.cs" />
     <Compile Include="Program.cs" />
