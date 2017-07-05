@@ -21,9 +21,9 @@ namespace RyaBot.Modules
 
     public Voice(Settings settings, Media media, Youtube youtube)
     {
-      _settings = settings;
-      _media = media;
-      _youtube = youtube;
+      _settings = settings ?? throw new ArgumentNullException(nameof(Settings));
+      _media = media ?? throw new ArgumentNullException(nameof(Media));
+      _youtube = youtube ?? throw new ArgumentNullException(nameof(Youtube));
     }
     
     [Command("Summon", RunMode = RunMode.Async)]
@@ -58,7 +58,7 @@ namespace RyaBot.Modules
         if (await _youtube.Download(url, _settings))
           await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" song: {_settings.playList.Values.Last().Title} has been added to the queue.");
         else
-          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Error occured while downloading song, song is either too long or doesn't exist.");
+          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Error occured while downloading song, song is either too long or doesn't exist.");
       }
     }
     
@@ -72,7 +72,7 @@ namespace RyaBot.Modules
         _settings.playList.Clear();
         _settings.currentSong = "";
 
-        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Stopped playing music and cleared the queue.");
+        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Stopped playing music and cleared the queue.");
       }
     }
 
@@ -82,7 +82,7 @@ namespace RyaBot.Modules
       if (_settings.voiceClient != null)
       {
         await _media.StopCurrentStreamAsync();
-        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"Stopped playing {_settings.currentSong}");
+        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Stopped playing {_settings.currentSong}");
       }
     }
 
@@ -109,7 +109,7 @@ namespace RyaBot.Modules
         await Context.Channel.SendMessageAsync("", embed: embed);
       }
       else
-        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $"No messages in the queue.");
+        await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" No songs in the queue.");
     }
   }
 }

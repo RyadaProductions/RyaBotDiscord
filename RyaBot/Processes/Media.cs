@@ -13,17 +13,17 @@ namespace RyaBot.Processes
   public class Media : IDisposable
   {
     private readonly Settings _settings;
-    private readonly Msg _message;
+    private readonly Message _message;
 
     private bool _playing = false;
     private CancellationTokenSource _source;
     private System.Timers.Timer _timer;
 
 
-    public Media(Settings settings, Msg message)
+    public Media(Settings settings, Message message)
     {
-      _settings = settings;
-      _message = message;
+      _settings = settings ?? throw new ArgumentNullException(nameof(Settings));
+      _message = message ?? throw new ArgumentNullException(nameof(Message));
 
       _timer = new System.Timers.Timer(1000);
       _timer.AutoReset = false;
@@ -67,25 +67,36 @@ namespace RyaBot.Processes
 
     public async Task StopCurrentStreamAsync()
     {
+      //@@@ Currently does not restart playing a song after being ran once
       if (_playing)
       {
-        if (_source != null) _source.Cancel();
+        if (_source != null)
+        {
+          _source.Cancel();
+          _source.Dispose();
+          _source = null;
+        }
         _playing = false;
+        _timer.Start();
       }
     }
 
     private async Task HandleTimerAsync()
     {
-      if (_settings.voiceClient != null && _settings.playList.Count > 0 && !_playing)
+      try
       {
-        _playing = true;
-        var path = _settings.playList.Keys.First();
+        if (_settings.voiceClient != null && _settings.playList.Count > 0 && !_playing)
+        {
+          _playing = true;
+          var path = _settings.playList.Keys.First();
 
-        _settings.playList.TryRemove(_settings.playList.Keys.First(), out VideoInfo video);
-        await _message.SendToChannel(331741897737502720, $"Now playing: {video.Title}");
-        _settings.currentSong = video.Title;
-        await StartStreamAsync(_settings.voiceClient, path);
+          _settings.playList.TryRemove(_settings.playList.Keys.First(), out VideoInfo video);
+          await _message.SendToChannel(331741897737502720, $"Now playing: {video.Title}");
+          _settings.currentSong = video.Title;
+          await StartStreamAsync(_settings.voiceClient, path);
+        }
       }
+      catch (Exception e) { Console.WriteLine(e); }
     }
 
     public void Dispose()
@@ -98,11 +109,8 @@ namespace RyaBot.Processes
     {
       if (disposing)
       {
-        if (_timer != null)
-        {
-          _timer.Dispose();
-          _timer = null;
-        }
+        _timer.Dispose();
+        _timer = null;
       }
     }
   }

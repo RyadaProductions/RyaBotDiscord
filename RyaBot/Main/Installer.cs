@@ -23,14 +23,14 @@ namespace RyaBot.Main
     private IServiceProvider _services;
     // Services
     private readonly Settings _settings = new Settings();
-    private readonly Msg _message;
+    private readonly Message _message;
     private readonly Media _media;
 
 
     public Installer(DiscordSocketClient client)
     {
-      _client = client;
-      _message = new Msg(_client);
+      _client = client ?? throw new ArgumentNullException(nameof(DiscordSocketClient));
+      _message = new Message(_client);
       _media = new Media(_settings, _message);
     }
 

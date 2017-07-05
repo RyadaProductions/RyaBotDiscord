@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace RyaBot.Handlers
 {
-  public class Msg
+  public class Message
   {
     private readonly DiscordSocketClient _client;
 
-    public Msg(DiscordSocketClient client)
+    public Message(DiscordSocketClient client)
     {
-      _client = client;
+      _client = client ?? throw new ArgumentNullException(nameof(DiscordSocketClient));
     }
 
     public async Task SendToChannel(ulong channelID, string message)
