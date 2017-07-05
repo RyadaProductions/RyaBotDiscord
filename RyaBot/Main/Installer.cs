@@ -11,9 +11,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RyaBot
+namespace RyaBot.Main
 {
-  public class Commands
+  public class Installer
   {
     DiscordSocketClient _Client;
     // Commands Service holding all commands
@@ -27,7 +27,7 @@ namespace RyaBot
     private Media _Media;
 
 
-    public Commands(DiscordSocketClient _Client)
+    public Installer(DiscordSocketClient _Client)
     {
       this._Client = _Client;
     }

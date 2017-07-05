@@ -3,6 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using RyaBot.Handlers;
+using RyaBot.Main;
 using RyaBot.Processes;
 using RyaBot.Services;
 using System;
@@ -30,7 +31,7 @@ namespace RyaBot
       string token = Environment.GetEnvironmentVariable("token");
       _Client.Log += Logger;
 
-      await new Commands(_Client).InstallCommands();
+      await new Installer(_Client).InstallCommands();
 
       await _Client.LoginAsync(TokenType.Bot, token);
       await _Client.StartAsync();
