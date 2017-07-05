@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RyaBot
 {
-  class RyaBot
+  public class RyaBot
   {
     private DiscordSocketClient _Client;
 
@@ -28,7 +28,7 @@ namespace RyaBot
     public async Task Start()
     {
 
-      string token = Environment.GetEnvironmentVariable("token");
+      var token = Environment.GetEnvironmentVariable("token");
       _Client.Log += Logger;
 
       await new Installer(_Client).InstallCommands();

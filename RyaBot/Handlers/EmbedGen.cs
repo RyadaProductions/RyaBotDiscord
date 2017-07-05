@@ -2,7 +2,7 @@
 
 namespace RyaBot.Handlers
 {
-  class EmbedGen
+  public class EmbedGen
   {
     public EmbedGen()
     {
@@ -10,7 +10,7 @@ namespace RyaBot.Handlers
 
     public Embed Generate(string message)
     {
-      Embed embed = new EmbedBuilder()
+      var embed = new EmbedBuilder()
                 .WithColor(new Color(9912378))
                 .WithDescription(message);
       return embed;

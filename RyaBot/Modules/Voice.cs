@@ -81,8 +81,8 @@ namespace RyaBot.Modules
     {
       if (settings.playList.Count > 0)
       {
-        int songNr = 0;
-        string songList = "**Current song:** " + settings.currentSong + "\n \n";
+        var songNr = 0;
+        var songList = "**Current song:** " + settings.currentSong + "\n \n";
         songList += "**Song Queue:** \n \n";
 
         foreach (VideoInfo video in settings.playList.Values)
@@ -95,7 +95,7 @@ namespace RyaBot.Modules
           songList += video.Duration.Minutes + ":" + video.Duration.Seconds + "\n";
         }
 
-        Embed embed = new EmbedGen().Generate(songList);
+        var embed = new EmbedGen().Generate(songList);
         await Context.Channel.SendMessageAsync("", embed: embed);
       }
       else

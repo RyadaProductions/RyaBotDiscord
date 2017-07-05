@@ -9,7 +9,7 @@ namespace RyaBot.Services
 {
   public class Msg
   {
-    DiscordSocketClient _Client;
+    private DiscordSocketClient _Client;
 
     public Msg(DiscordSocketClient _Client)
     {

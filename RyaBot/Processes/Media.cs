@@ -11,12 +11,12 @@ namespace RyaBot.Processes
 {
   public class Media
   {
-    Settings settings;
-    Msg message;
+    private Settings settings;
+    private Msg message;
     private bool playing = false;
-    public System.Timers.Timer timer;
+    private CancellationTokenSource source;
+    private System.Timers.Timer timer;
 
-    CancellationTokenSource source;
 
     public Media(Settings settings, Msg message)
     {
@@ -83,7 +83,7 @@ namespace RyaBot.Processes
         if (settings.voiceClient != null && settings.playList.Count > 0 && !playing)
         {
           playing = true;
-          string path = settings.playList.Keys.First();
+          var path = settings.playList.Keys.First();
 
           settings.playList.TryRemove(settings.playList.Keys.First(), out VideoInfo video);
           await message.SendToChannel(331741897737502720, $"Now playing: {video.Title}");

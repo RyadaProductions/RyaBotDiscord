@@ -15,7 +15,7 @@ namespace RyaBot.Main
 {
   public class Installer
   {
-    DiscordSocketClient _Client;
+    private DiscordSocketClient _Client;
     // Commands Service holding all commands
     private readonly CommandService _Commands = new CommandService();
     // Dependency Injection
