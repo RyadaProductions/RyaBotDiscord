@@ -59,8 +59,7 @@ namespace RyaBot
       _Map.AddSingleton(new Youtube());
 
       _Services = _Map.BuildServiceProvider();
-
-      //await _Commands.AddModulesAsync(new Voice());
+      
       await _Commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
       _Client.MessageReceived += CmdHandler;

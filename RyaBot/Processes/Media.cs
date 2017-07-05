@@ -22,6 +22,7 @@ namespace RyaBot.Processes
     {
       this.settings = settings;
       this.message = message;
+
       timer = new System.Timers.Timer(1000);
       timer.Elapsed += async (sender, e) => await HandleTimerAsync();
       timer.Start();
@@ -43,14 +44,17 @@ namespace RyaBot.Processes
       var ffmpegProcess = CreateStream(mediaPath);
       var ffmpegOutput = ffmpegProcess.StandardOutput.BaseStream;
       var discordAudioStream = client.CreatePCMStream(AudioApplication.Mixed);
+
       source = new CancellationTokenSource();
       Console.WriteLine("new " + source);
+
       await ffmpegOutput.CopyToAsync(discordAudioStream, 81920, source.Token).ContinueWith(task => {
         if (!task.IsCanceled && task.IsFaulted) //supress cancel exception
           Console.WriteLine(task.Exception);
       });
       ffmpegProcess.WaitForExit();
       await discordAudioStream.FlushAsync();
+
       Console.WriteLine("dispose " + source);
       source.Dispose();
       settings.currentSong = "";
@@ -80,6 +84,7 @@ namespace RyaBot.Processes
         {
           playing = true;
           string path = settings.playList.Keys.First();
+
           settings.playList.TryRemove(settings.playList.Keys.First(), out VideoInfo video);
           await message.SendToChannel(331741897737502720, $"Now playing: {video.Title}");
           settings.currentSong = video.Title;

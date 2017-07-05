@@ -30,29 +30,20 @@ namespace RyaBot.Handlers
         Console.WriteLine($"Opening / Creating output folder at: {outputFolder}");
         Directory.CreateDirectory(outputFolder);
         VideoInfo videoInfo = await downloader.GetVideoInfoAsync(URL);
-        if (videoInfo.Duration > TimeSpan.FromMinutes(10))
-        {
-          return false;
-        }
-        try
-        {
-          var streamInfo = videoInfo.AudioStreams.OrderBy(s => s.AudioEncoding).Last();
-          string fileExtension = streamInfo.Container.GetFileExtension();
 
-          string filePath = Path.Combine(outputFolder, await GetMD5(videoInfo.Title) + fileExtension);
-        
+        if (videoInfo.Duration > TimeSpan.FromMinutes(10)) return false;
+
+        var streamInfo = videoInfo.AudioStreams.OrderBy(s => s.AudioEncoding).Last();
+        string fileExtension = streamInfo.Container.GetFileExtension();
+
+        string filePath = Path.Combine(outputFolder, await GetMD5(videoInfo.Title) + fileExtension);
+
         Console.WriteLine($"Trying to find song at path: {filePath}");
-        if (!File.Exists(filePath))
-        {
-          await downloader.DownloadMediaStreamAsync(streamInfo, filePath);
-        }
+
+        if (!File.Exists(filePath)) await downloader.DownloadMediaStreamAsync(streamInfo, filePath);
+
         settings.playList.TryAdd(filePath, videoInfo);
         return true;
-        }
-        catch (Exception e)
-        {
-          Console.WriteLine(e);
-        }
       }
       return false;
     }
