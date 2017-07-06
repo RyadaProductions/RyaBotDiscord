@@ -86,7 +86,7 @@ namespace RyaBot.Processes
       {
         _playing = true;
         var song = _settings.playList.First();
-        _settings.playList.Remove(_settings.playList.First());
+        _settings.playList.RemoveAt(0);
 
         await _message.SendToChannel(331741897737502720, $"Now playing: {song.Title}");
         _settings.currentSong = song.Title;

@@ -24,15 +24,16 @@ namespace RyaBot.Models
       return false;
     }
 
-    public void Remove(T obj)
+    public new void RemoveAt(int index)
     {
-      _internalHashSet.Remove(obj.GetHashCode());
-      _internalList.Remove(obj);
+      var hash = _internalList[index].GetHashCode();
+      _internalList.RemoveAt(index);
+      _internalHashSet.Remove(hash);
     }
 
     public T First()
     {
-      return _internalList.First();
+      return _internalList[0];
     }
 
     public T Last()
