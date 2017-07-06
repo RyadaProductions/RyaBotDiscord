@@ -1,13 +1,13 @@
 ﻿using Discord.Audio;
-using System.Collections.Concurrent;
-using YoutubeExplode.Models;
+using RyaBot.Models;
+using System.Collections.Generic;
 
 namespace RyaBot.Services
 {
   public class Settings
   {
     public string currentSong = "";
-    public ConcurrentDictionary<string, VideoInfo> playList = new ConcurrentDictionary<string, VideoInfo>();
+    public HashList<Song> playList = new HashList<Song>();
     public IAudioClient voiceClient = null;
   }
 }

@@ -1,4 +1,5 @@
-﻿using RyaBot.Services;
+﻿using RyaBot.Models;
+using RyaBot.Services;
 using System;
 using System.IO;
 using System.Linq;
@@ -41,8 +42,7 @@ namespace RyaBot.Handlers
 
         if (!File.Exists(filePath)) await _ytClient.DownloadMediaStreamAsync(streamInfo, filePath);
 
-        settings.playList.TryAdd(filePath, videoInfo);
-        return true;
+        if (settings.playList.Add(new Song { Path = filePath, Title = videoInfo.Title, Duration = videoInfo.Duration })) return true;
       }
       return false;
     }

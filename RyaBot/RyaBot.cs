@@ -4,9 +4,13 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using RyaBot.Handlers;
 using RyaBot.Main;
+using RyaBot.Models;
 using RyaBot.Processes;
 using RyaBot.Services;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -24,7 +28,7 @@ namespace RyaBot
         LogLevel = LogSeverity.Info,
       });
     }
-    
+
     public async Task Start()
     {
 
@@ -38,7 +42,7 @@ namespace RyaBot
 
       await Task.Delay(-1);
     }
-    
+
     private static Task Logger(LogMessage message)
     {
       var cc = Console.ForegroundColor;
