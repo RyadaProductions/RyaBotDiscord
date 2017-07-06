@@ -54,7 +54,7 @@ namespace RyaBot.Modules
     }
     
     [Command("Play", RunMode = RunMode.Async)]
-    public async Task Playmusic(String url)
+    public async Task PlayMusic(String url)
     {
       if (_settings.voiceClient != null)
       {
@@ -64,9 +64,18 @@ namespace RyaBot.Modules
           await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Error occured while downloading song, possible causes: {Environment.NewLine}- Song is too long.{Environment.NewLine}- Song does not exist.{Environment.NewLine}- Song is already in the queue.{Environment.NewLine}- No audio encoding received.");
       }
     }
-    
+
+    [Command("RemoveSong", RunMode = RunMode.Async)]
+    public async Task RemoveMusic(int queueNr)
+    {
+      if (_settings.voiceClient != null && queueNr > 0 && queueNr < _settings.playList.Count())
+      {
+        _settings.playList.RemoveAt(queueNr);
+      }
+    }
+
     [Command("Stop", RunMode = RunMode.Async)]
-    public async Task Stopmusic()
+    public async Task StopMusic()
     {
       if (_settings.voiceClient != null)
       {
