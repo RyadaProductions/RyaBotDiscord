@@ -68,10 +68,12 @@ namespace RyaBot.Modules
     [Command("RemoveSong", RunMode = RunMode.Async)]
     public async Task RemoveMusic(int queueNr)
     {
-      if (_settings.voiceClient != null && queueNr > 0 && queueNr < _settings.playList.Count())
-      {
-        _settings.playList.RemoveAt(queueNr);
-      }
+      await Task.Run(() => {
+        if (_settings.voiceClient != null && queueNr > 0 && queueNr <= _settings.playList.Count())
+        {
+          _settings.playList.RemoveAt(queueNr - 1);
+        }
+      });
     }
 
     [Command("Stop", RunMode = RunMode.Async)]

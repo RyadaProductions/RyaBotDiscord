@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using YoutubeExplode.Models;
 
 namespace RyaBot.Processes
 {
@@ -49,7 +48,6 @@ namespace RyaBot.Processes
       var discordAudioStream = client.CreatePCMStream(AudioApplication.Mixed);
 
       _source = new CancellationTokenSource();
-      Console.WriteLine("new " + _source);
 
       await ffmpegOutput.CopyToAsync(discordAudioStream, 81920, _source.Token).ContinueWith(task => {
         if (!task.IsCanceled && task.IsFaulted) //supress cancel exception
@@ -57,8 +55,7 @@ namespace RyaBot.Processes
       });
       ffmpegProcess.WaitForExit();
       await discordAudioStream.FlushAsync();
-
-      Console.WriteLine("dispose " + _source);
+      
       _source.Dispose();
       _source = null;
       _settings.currentSong = "";

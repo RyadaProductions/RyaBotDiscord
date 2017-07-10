@@ -13,37 +13,52 @@ namespace RyaBot.Handlers
 {
   public class Youtube
   {
-    private readonly YoutubeClient _ytClient;
-    private readonly string _outputFolder = $"{Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar}videos";
+    private readonly string _outputFolder = $"{Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar}music";
 
     public Youtube()
     {
-      _ytClient = new YoutubeClient();
     }
 
-    public async Task<bool> Download(string URL, Settings settings)
+    public async Task<bool> Download(string url, Settings settings)
     {
-      var exists = await _ytClient.CheckVideoExistsAsync(URL);
+      var ytClient = new YoutubeClient(); ;
+
+      if (!YoutubeClient.TryParseVideoId(url, out string id))
+        id = url;
+
+      var exists = await ytClient.CheckVideoExistsAsync(id);
 
       if (exists)
       {
-        Console.WriteLine($"Opening / Creating output folder at: {_outputFolder}");
         Directory.CreateDirectory(_outputFolder);
-        var videoInfo = await _ytClient.GetVideoInfoAsync(URL);
 
-        if (videoInfo.Duration > TimeSpan.FromMinutes(10)) return false;
+        var videoInfo = await ytClient.GetVideoInfoAsync(id);
+
+        if (videoInfo.Duration > TimeSpan.FromMinutes(10))
+        {
+          ytClient = null;
+          return false;
+        }
 
         var streamInfo = videoInfo.AudioStreams.OrderBy(s => s.AudioEncoding).Last();
         var fileExtension = streamInfo.Container.GetFileExtension();
 
         var filePath = Path.Combine(_outputFolder, await GetMD5(videoInfo.Title) + fileExtension);
 
-        Console.WriteLine($"Trying to find song at path: {filePath}");
+        if (!File.Exists(filePath)) await ytClient.DownloadMediaStreamAsync(streamInfo, filePath);
 
-        if (!File.Exists(filePath)) await _ytClient.DownloadMediaStreamAsync(streamInfo, filePath);
+        ytClient = null;
 
-        if (settings.playList.Add(new Song { Path = filePath, Title = videoInfo.Title, Duration = videoInfo.Duration })) return true;
+        var song = new Song { Path = filePath, Title = videoInfo.Title, Duration = videoInfo.Duration };
+
+        if (!settings.playList.Contains(song))
+        {
+          settings.playList.Add(song);
+          return true;
+        }
       }
+      ytClient = null;
+
       return false;
     }
 

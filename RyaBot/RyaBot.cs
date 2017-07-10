@@ -26,6 +26,7 @@ namespace RyaBot
 
       _client = new DiscordSocketClient(new DiscordSocketConfig {
         LogLevel = LogSeverity.Info,
+        
       });
     }
 

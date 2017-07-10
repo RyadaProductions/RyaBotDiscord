@@ -137,7 +137,6 @@
     <Compile Include="Handlers\EmbedGen.cs" />
     <Compile Include="Handlers\Message.cs" />
     <Compile Include="Handlers\Youtube.cs" />
-    <Compile Include="Models\HashList.cs" />
     <Compile Include="Models\Song.cs" />
     <Compile Include="Modules\Voice.cs" />
     <Compile Include="Program.cs" />

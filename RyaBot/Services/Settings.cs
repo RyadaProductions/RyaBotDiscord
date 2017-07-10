@@ -7,7 +7,7 @@ namespace RyaBot.Services
   public class Settings
   {
     public string currentSong = "";
-    public HashList<Song> playList = new HashList<Song>();
+    public List<Song> playList = new List<Song>();
     public IAudioClient voiceClient = null;
   }
 }

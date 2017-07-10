@@ -17,12 +17,11 @@ namespace RyaBot.Main
   {
     private readonly DiscordSocketClient _client;
     // Commands Service holding all commands
-    private readonly CommandService _commands = new CommandService();
+    private readonly CommandService _commands;
     // Dependency Injection
-    private readonly IServiceCollection _map = new ServiceCollection();
     private IServiceProvider _services;
     // Services
-    private readonly Settings _settings = new Settings();
+    private readonly Settings _settings;
     private readonly Message _message;
     private readonly Media _media;
 
@@ -30,18 +29,24 @@ namespace RyaBot.Main
     public Installer(DiscordSocketClient client)
     {
       _client = client ?? throw new ArgumentNullException(nameof(DiscordSocketClient));
+
+      _commands = new CommandService();
+
+      _settings = new Settings();
       _message = new Message(_client);
       _media = new Media(_settings, _message);
     }
 
     public async Task InstallCommands()
     {
-      _map.AddSingleton(_settings);
-      _map.AddSingleton(_message);
-      _map.AddSingleton(_media);
-      _map.AddSingleton(new Youtube());
+      IServiceCollection map = new ServiceCollection();
 
-      _services = _map.BuildServiceProvider();
+      map.AddSingleton(_settings);
+      map.AddSingleton(_message);
+      map.AddSingleton(_media);
+      map.AddSingleton(new Youtube());
+
+      _services = map.BuildServiceProvider();
 
       await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
 
@@ -61,7 +66,7 @@ namespace RyaBot.Main
         var result = await _commands.ExecuteAsync(context, pos, _services);
 
         #if DEBUG
-          if (!result.IsSuccess) await context.Channel.SendMessageAsync(result.ErrorReason);
+        if (!result.IsSuccess) await context.Channel.SendMessageAsync(result.ErrorReason);
         #endif
       }
     }
