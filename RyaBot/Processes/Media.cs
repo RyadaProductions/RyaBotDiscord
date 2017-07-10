@@ -30,22 +30,23 @@ namespace RyaBot.Processes
       _timer.Start();
     }
 
-    private Process CreateStream(string path)
+    private Process StartFFMPEG(string url)
     {
       var ffmpeg = new ProcessStartInfo {
         FileName = "3rd_party\\ffmpeg",
-        Arguments = $"-loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
+        Arguments = $"-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5 -err_detect ignore_err -i {url} -f s16le -ar 48000 -vn -ac 2 pipe:1 -loglevel fatal",
         UseShellExecute = false,
         RedirectStandardOutput = true,
       };
       return Process.Start(ffmpeg);
     }
 
-    public async Task StartStreamAsync(IAudioClient client, string mediaPath)
+    public async Task StartStreamAsync(IAudioClient client, string url)
     {
-      var ffmpegProcess = CreateStream(mediaPath);
+      var ffmpegProcess = StartFFMPEG(url);
+      Console.WriteLine("test");
       var ffmpegOutput = ffmpegProcess.StandardOutput.BaseStream;
-      var discordAudioStream = client.CreatePCMStream(AudioApplication.Mixed);
+      var discordAudioStream = client.CreatePCMStream(AudioApplication.Music, bufferMillis: 500);
 
       _source = new CancellationTokenSource();
 
@@ -87,7 +88,7 @@ namespace RyaBot.Processes
 
         await _message.SendToChannel(331741897737502720, $"Now playing: {song.Title}");
         _settings.currentSong = song.Title;
-        await StartStreamAsync(_settings.voiceClient, song.Path);
+        await StartStreamAsync(_settings.voiceClient, song.Url);
       }
     }
 

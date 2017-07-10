@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using YoutubeExplode.Models;
 
 namespace RyaBot.Modules
 {
@@ -58,10 +57,10 @@ namespace RyaBot.Modules
     {
       if (_settings.voiceClient != null)
       {
-        if (await _youtube.Download(url, _settings))
+        if (await _youtube.GetYoutubeSong(url, _settings))
           await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" song: {_settings.playList.Last().Title} has been added to the queue.");
         else
-          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Error occured while downloading song, possible causes: {Environment.NewLine}- Song is too long.{Environment.NewLine}- Song does not exist.{Environment.NewLine}- Song is already in the queue.{Environment.NewLine}- No audio encoding received.");
+          await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Error occured while adding a song to the queue, possible causes: {Environment.NewLine}- Song is too long.{Environment.NewLine}- Song does not exist.{Environment.NewLine}- Song is already in the queue.{Environment.NewLine}- No audio encoding received.");
       }
     }
 
