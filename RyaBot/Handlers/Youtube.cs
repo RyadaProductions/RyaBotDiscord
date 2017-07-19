@@ -27,7 +27,8 @@ namespace RyaBot.Handlers
         if (time.TotalMinutes > 10)
           return null;
 
-        return new Song() {
+        return new Song()
+        {
           Title = data[0],
           Duration = time,
           Url = data[2],

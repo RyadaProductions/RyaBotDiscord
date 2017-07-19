@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RyaBot.Processes
 {
-  class YoutubeDL : IDisposable
+  internal class YoutubeDL : IDisposable
   {
     public YoutubeDL()
     {
@@ -15,8 +12,10 @@ namespace RyaBot.Processes
 
     public async Task<string> GetDataAsync(string url)
     {
-      using (Process process = new Process() {
-        StartInfo = new ProcessStartInfo() {
+      using (Process process = new Process()
+      {
+        StartInfo = new ProcessStartInfo()
+        {
           FileName = "3rd_party\\youtube-dl",
           Arguments = $"-f bestaudio -e --get-url --get-id --get-thumbnail --get-duration --no-check-certificate \"ytsearch:{url}\"",
           UseShellExecute = false,
@@ -37,7 +36,6 @@ namespace RyaBot.Processes
 
     public void Dispose()
     {
-
     }
   }
 }

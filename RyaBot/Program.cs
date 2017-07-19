@@ -1,8 +1,8 @@
 ﻿namespace RyaBot
 {
-  class Program
+  internal class Program
   {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
       new RyaBot().Start().GetAwaiter().GetResult();
     }

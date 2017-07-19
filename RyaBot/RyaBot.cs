@@ -1,17 +1,7 @@
 ﻿using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.Extensions.DependencyInjection;
-using RyaBot.Handlers;
 using RyaBot.Main;
-using RyaBot.Models;
-using RyaBot.Processes;
-using RyaBot.Services;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace RyaBot
@@ -24,15 +14,14 @@ namespace RyaBot
     {
       Console.Title = "RyaBot";
 
-      _client = new DiscordSocketClient(new DiscordSocketConfig {
+      _client = new DiscordSocketClient(new DiscordSocketConfig
+      {
         LogLevel = LogSeverity.Info,
-        
       });
     }
 
     public async Task Start()
     {
-
       var token = Environment.GetEnvironmentVariable("token");
       _client.Log += Logger;
 
@@ -53,12 +42,15 @@ namespace RyaBot
         case LogSeverity.Error:
           Console.ForegroundColor = ConsoleColor.Red;
           break;
+
         case LogSeverity.Warning:
           Console.ForegroundColor = ConsoleColor.Yellow;
           break;
+
         case LogSeverity.Info:
           Console.ForegroundColor = ConsoleColor.White;
           break;
+
         case LogSeverity.Verbose:
         case LogSeverity.Debug:
           Console.ForegroundColor = ConsoleColor.DarkGray;
