@@ -44,7 +44,6 @@ namespace RyaBot.Processes
     public async Task StartStreamAsync(IAudioClient client, string url)
     {
       var ffmpegProcess = StartFFMPEG(url);
-      Console.WriteLine("test");
       var ffmpegOutput = ffmpegProcess.StandardOutput.BaseStream;
       var discordAudioStream = client.CreatePCMStream(AudioApplication.Music, bufferMillis: 500);
 
