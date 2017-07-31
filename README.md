@@ -6,27 +6,27 @@ Currently only windows is supported
 
 ## Getting Started
 
-> Clone the repo to your desktop
-> Add the bot token to your environment variables (key is "token")
-> Download the 3rd party files
-> Build the project in Visual Studio
-> Run the project and you should have a working music bot
+* Clone the repo to your desktop
+* Add the bot token to your environment variables (key is "token")
+* Download the 3rd party files
+* Build the project in Visual Studio
+* Run the project and you should have a working music bot
 
 ### Prerequisites
 
-> FFMpeg
+* FFMpeg
 ```
 You can download the FFMpeg.exe from https://www.ffmpeg.org/ And place the exe in the 3rd_party folder.
 ```
 
-> Voice libraries
+* Voice libraries
 ```
 Windows 64-bit: https://dsharpplus.emzi0767.com/natives/vnext_natives_win32_x64.zip
 Windows 32-bit: https://dsharpplus.emzi0767.com/natives/vnext_natives_win32_x86.zip
 You need to rename libopus.dll to opus.dll before use, otherwise audio client will still complain about missing libraries.
 ```
 
-> Youtube-dl
+* Youtube-dl
 ```
 I use a special version of youtube-dl.exe which is also used by Nadeko bot, to find it look where nadeko gets it from :P
 ```
