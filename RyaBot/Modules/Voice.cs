@@ -1,13 +1,12 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using RyaBot.Handlers;
 using RyaBot.Models;
 using RyaBot.Processes;
 using RyaBot.Services;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RyaBot.Modules
@@ -27,17 +26,17 @@ namespace RyaBot.Modules
       _media = media ?? throw new ArgumentNullException(nameof(Media));
       _youtube = youtube ?? throw new ArgumentNullException(nameof(Youtube));
     }
-    
+
     [Command("Summon", RunMode = RunMode.Async)]
     public async Task JoinChannel()
     {
       if (_settings.voiceClient == null)
       {
-        var channel = Context.Client.GetChannel(_voiceChannel) as IVoiceChannel;
+        var channel = Context.Client.GetChannel(_voiceChannel) as SocketVoiceChannel;
         _settings.voiceClient = await channel.ConnectAsync();
       }
     }
-    
+
     [Command("Unsummon", RunMode = RunMode.Async)]
     public async Task LeaveChannel()
     {
@@ -51,9 +50,9 @@ namespace RyaBot.Modules
         _settings.currentSong = "";
       }
     }
-    
+
     [Command("Play", RunMode = RunMode.Async)]
-    public async Task PlayMusic(String url)
+    public async Task PlayMusic([Remainder]String url)
     {
       if (_settings.voiceClient != null)
       {
@@ -67,7 +66,8 @@ namespace RyaBot.Modules
     [Command("RemoveSong", RunMode = RunMode.Async)]
     public async Task RemoveMusic(int queueNr)
     {
-      await Task.Run(() => {
+      await Task.Run(() =>
+      {
         if (_settings.voiceClient != null && queueNr > 0 && queueNr <= _settings.playList.Count())
         {
           _settings.playList.RemoveAt(queueNr - 1);
@@ -100,7 +100,8 @@ namespace RyaBot.Modules
         {
           await _media.StopCurrentStreamAsync();
           await Context.Channel.SendMessageAsync(Context.Message.Author.Mention + $" Stopped playing {_settings.currentSong}");
-        } else
+        }
+        else
         {
           await Context.Channel.SendMessageAsync($"{voteCount} people have voted to skip this song. {(userCount / 2) - voteCount} more votes required to skip this song.");
         }

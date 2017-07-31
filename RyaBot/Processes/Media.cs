@@ -18,7 +18,6 @@ namespace RyaBot.Processes
     private System.Timers.Timer _timer;
     private bool _playing = false;
 
-
     public Media(Settings settings, Message message)
     {
       _settings = settings ?? throw new ArgumentNullException(nameof(Settings));
@@ -32,7 +31,8 @@ namespace RyaBot.Processes
 
     private Process StartFFMPEG(string url)
     {
-      var ffmpeg = new ProcessStartInfo {
+      var ffmpeg = new ProcessStartInfo
+      {
         FileName = "3rd_party\\ffmpeg",
         Arguments = $"-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5 -err_detect ignore_err -i {url} -f s16le -ar 48000 -vn -ac 2 pipe:1 -loglevel fatal",
         UseShellExecute = false,
@@ -49,13 +49,14 @@ namespace RyaBot.Processes
 
       _source = new CancellationTokenSource();
 
-      await ffmpegOutput.CopyToAsync(discordAudioStream, 81920, _source.Token).ContinueWith(task => {
+      await ffmpegOutput.CopyToAsync(discordAudioStream, 81920, _source.Token).ContinueWith(task =>
+      {
         if (!task.IsCanceled && task.IsFaulted) //supress cancel exception
           Console.WriteLine(task.Exception);
       });
       ffmpegProcess.WaitForExit();
       await discordAudioStream.FlushAsync();
-      
+
       _source.Dispose();
       _source = null;
       _settings.currentSong = "";
