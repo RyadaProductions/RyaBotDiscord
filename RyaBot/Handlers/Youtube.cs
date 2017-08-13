@@ -1,6 +1,5 @@
 ﻿using RyaBot.Models;
 using RyaBot.Processes;
-using RyaBot.Services;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -9,13 +8,9 @@ namespace RyaBot.Handlers
 {
   public class Youtube
   {
-    public Youtube()
-    {
-    }
-
     public async Task<Song> Download(string url)
     {
-      using (var ytDownloader = new YoutubeDL())
+      using (var ytDownloader = new YoutubeDl())
       {
         var data = (await ytDownloader.GetDataAsync(url)).Split('\n');
         if (data.Length < 6)
@@ -27,7 +22,7 @@ namespace RyaBot.Handlers
         if (time.TotalMinutes > 10)
           return null;
 
-        return new Song()
+        return new Song
         {
           Title = data[0],
           Duration = time,
@@ -39,14 +34,12 @@ namespace RyaBot.Handlers
     public async Task<bool> GetYoutubeSong(string url, Settings settings)
     {
       var song = await Download(url);
-      if (song == null)
+
+      if (song == null || settings.PlayList.Contains(song))
         return false;
-      if (!settings.playList.Contains(song))
-      {
-        settings.playList.Add(song);
-        return true;
-      }
-      return false;
+      
+      settings.PlayList.Add(song);
+      return true;
     }
   }
 }

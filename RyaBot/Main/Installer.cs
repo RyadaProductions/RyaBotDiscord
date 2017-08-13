@@ -3,10 +3,10 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using RyaBot.Handlers;
 using RyaBot.Processes;
-using RyaBot.Services;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using RyaBot.Models;
 
 namespace RyaBot.Main
 {
@@ -58,16 +58,14 @@ namespace RyaBot.Main
       var msg = arg as SocketUserMessage;
       if (msg == null || msg.Author.IsBot) return;
 
-      int pos = 0;
+      var pos = 0;
       if (msg.HasCharPrefix('!', ref pos))
       {
         var context = new SocketCommandContext(_client, msg);
 
         var result = await _commands.ExecuteAsync(context, pos, _services);
-
-#if DEBUG
+        
         if (!result.IsSuccess) await context.Channel.SendMessageAsync(result.ErrorReason);
-#endif
       }
     }
   }

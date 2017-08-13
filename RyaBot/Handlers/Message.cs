@@ -13,10 +13,10 @@ namespace RyaBot.Handlers
       _client = client ?? throw new ArgumentNullException(nameof(DiscordSocketClient));
     }
 
-    public async Task SendToChannel(ulong channelID, string message)
+    public async Task SendToChannel(ulong channelId, string message)
     {
-      var channel = _client.GetChannel(channelID) as ISocketMessageChannel;
-      await channel.SendMessageAsync(message);
+      var channel = _client.GetChannel(channelId) as ISocketMessageChannel;
+      if (channel != null) await channel.SendMessageAsync(message);
     }
   }
 }

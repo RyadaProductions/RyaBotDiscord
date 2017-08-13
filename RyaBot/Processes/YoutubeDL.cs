@@ -4,15 +4,11 @@ using System.Threading.Tasks;
 
 namespace RyaBot.Processes
 {
-  internal class YoutubeDL : IDisposable
+  internal class YoutubeDl : IDisposable
   {
-    public YoutubeDL()
-    {
-    }
-
     public async Task<string> GetDataAsync(string url)
     {
-      using (Process process = new Process()
+      using (var process = new Process()
       {
         StartInfo = new ProcessStartInfo()
         {
